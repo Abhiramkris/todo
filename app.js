@@ -33,12 +33,11 @@ app.get('/register', async (req, res) => {
   res.render('register');
 });
 
-
 app.post('/login', async (req, res) => {
 
-  const { name, password } = req.body;
+  const { username, password } = req.body;
   try {
-    console.log("fk");
+       // console.log(req.body.username);
     const user = await User.loginUser(username, password);
     req.session.user = user;
     res.redirect('/');
