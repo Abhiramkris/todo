@@ -7,8 +7,10 @@
 </head>
 <body>
   <h1>To-Do App</h1>
-  <% if (error) { %>
-    <p style="color: red;"><%= error %></p>
-  <% } %>
+<form method="post">
+<input type="text" placeholder="username" name="name" required>
+<input type="text" placeholder="password" name="password" required>  
+<input type="submit">
+</form>
   </body>
 </html>

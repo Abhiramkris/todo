@@ -25,19 +25,31 @@ app.use(express.static(staticPath));
 // Login route
 app.get('/login', async (req, res) => {
 
-  const { username, password } = req.body;
   res.render('login');
+});
+
+app.get('/register', async (req, res) => {
+
+  res.render('register');
+});
+
+
+app.post('/login', async (req, res) => {
+
+  const { name, password } = req.body;
   try {
+    console.log("fk");
     const user = await User.loginUser(username, password);
     req.session.user = user;
     res.redirect('/');
   } catch (error) {
-    res.render('login', { error: error.message });
+    const error1 = 'Invalid username or password';
+    res.render('login', { error1 });
   }
 });
 
 // Register route
-app.get('/register', async (req, res) => {
+app.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
@@ -48,7 +60,7 @@ app.get('/register', async (req, res) => {
   }
 });
 
-app.get('/', (req, res) => {
+app.post('/', (req, res) => {
   if (!req.session.user) {
     res.render('index');
     return;
