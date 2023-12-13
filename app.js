@@ -8,10 +8,10 @@ const mysql = require('mysql2');
 
 const pool = mysql.createPool({
   // Your MySQL database connection details
-  host:"localhost",
-  user:"root",
-  password:"",
-  database:"todo",
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "todo",
 });
 const app = express();
 
@@ -45,7 +45,7 @@ app.post('/login', async (req, res) => {
 
   const { username, password } = req.body;
   try {
-       // console.log(req.body.username);
+    // console.log(req.body.username);
     const user = await User.loginUser(username, password);
     req.session.user = user;
     res.redirect('/');
@@ -58,12 +58,15 @@ app.post('/login', async (req, res) => {
 // Register route
 app.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
-  console.log("from appjs username "+username);
   try {
     await User.registerUser(username, email, password);
-    res.redirect('login');
-  } catch (error) {
-    res.render('register', { error: error.message });
+    if (error.code === 'ER_DUP_ENTRY'){
+    res.redirect('register', { error: "username pass alreaddy there"});
+    }
+    else{
+    res.render('login');
+  } }catch (error) {
+   console.log("hello "+error);
   }
 });
 
@@ -88,20 +91,6 @@ app.get('/check', (req, res) => {
   });
 })
 
-app.post('/lol', (req, res) => {
-const userId = 2;//req.session.user.id; // Assuming there is a user id in your session
-
-  pool.query('SELECT * FROM users WHERE id = ?', [userId], (err, results) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Error fetching user data from MySQL');
-    } else {
-      const userData = results[0]; // Assuming you expect one row for the user
-      console.log(userData);
-      res.render('todo', { user: userData });
-    }
-  });
-   });
 // Additional routes for to-do app functionalities
 
 app.listen(3000, () => {

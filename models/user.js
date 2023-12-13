@@ -24,7 +24,7 @@ async function registerUser(username, email, password) {
     password: hashedPassword, // You should hash the password before inserting into the database
   };
 
-  pool.query('INSERT INTO users SET ?', userData, (error, results, fields) => {
+  pool.query('INSERT INTO users SET ?', userData, (error, results) => {
     if (error) {
       console.error('Error inserting into the database:', error);
     } else {
