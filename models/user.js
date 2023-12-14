@@ -2,7 +2,7 @@ const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
 const express = require('express');
 const app = express();
-
+const notifier = require('node-notifier');
 const pool = mysql.createPool({
   // Your MySQL database connection details
   host:"localhost",
@@ -14,9 +14,26 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 
-
+async function CheckSql()
+{
+  pool.getConnection((err, connection) => {
+    if (err) {
+      //res.status(500).send('Error connecting to MySQL server');
+      console.error(err);
+      notifier.notify({
+        title: 'Salutations!',
+        message: 'Hey there!',
+       // icon: path.join(__dirname, 'icon.jpg'),
+        sound: true,
+        wait: true
+      })
+    } else {
+     // res.send('MySQL connection is healthy!');
+      connection.release();
+    }
+  });
+}
 async function registerUser(username, email, password) {
-  console.log("from userjs username "+username);
   const hashedPassword = await bcrypt.hash(password, 10);
   const userData = {
     username: username,
@@ -24,7 +41,7 @@ async function registerUser(username, email, password) {
     password: hashedPassword, // You should hash the password before inserting into the database
   };
 
-  pool.query('INSERT INTO users SET ?', userData, (error, results) => {
+  pool.query('INSERT INTO users SET ?', userData, (error, resultss) => {
     if (error) {
       console.error('Error inserting into the database:', error);
     } else {
@@ -55,4 +72,5 @@ async function loginUser(username, password) {
 module.exports = {
   registerUser,
   loginUser,
+  CheckSql,
 };

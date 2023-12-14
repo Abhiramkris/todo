@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "alert": "^6.0.1",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
@@ -8,8 +9,10 @@
     "express-sessions": "^1.0.1",
     "mysql": "^2.18.1",
     "mysql2": "^3.6.5",
+    "node-notifier": "^10.0.1",
     "nodemon": "^3.0.2",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "popups": "^1.1.3"
   },
   "name": "todoinnode",
   "version": "1.0.0",
