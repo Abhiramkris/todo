@@ -2,38 +2,33 @@ const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
 const express = require('express');
 const app = express();
-const notifier = require('node-notifier');
 const pool = mysql.createPool({
   // Your MySQL database connection details
-  host:"localhost",
-  user:"root",
-  password:"",
-  database:"todo",
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "todo",
 });
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 
-async function CheckSql()
-{
-  pool.getConnection((err, connection) => {
+
+const CheckSql=(req, res, next) => {
+  pool.getConnection((err,connection) => {
     if (err) {
-      //res.status(500).send('Error connecting to MySQL server');
-      console.error(err);
-      notifier.notify({
-        title: 'Salutations!',
-        message: 'Hey there!',
-       // icon: path.join(__dirname, 'icon.jpg'),
-        sound: true,
-        wait: true
-      })
-    } else {
-     // res.send('MySQL connection is healthy!');
+      console.error('err con to sql');
+      res.status(500).json({error:'internal or server busy error'});
+    }
+    else {
+      console.log('connected to server');
       connection.release();
+      next();
     }
   });
-}
+};
 async function registerUser(username, email, password) {
+  console.log("from userjs username " + username);
   const hashedPassword = await bcrypt.hash(password, 10);
   const userData = {
     username: username,
@@ -49,14 +44,14 @@ async function registerUser(username, email, password) {
       console.log('Inserted row ID:', results.insertId);
     }
   });
-  
+
   return result.insertId;
 }
 
 async function loginUser(username, password) {
   const [user] = await pool.query('SELECT * FROM users WHERE username = ?', [username]);
   //console.log(username);
-    if (!user) {
+  if (!user) {
     throw new Error('Username not found');
   }
 

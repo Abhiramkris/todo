@@ -4,8 +4,9 @@ const bodyParser = require('body-parser');
 const ejs = require('ejs');
 const User = require('./models/user');
 const path = require('path');
-const mysql = require('mysql2');
-const notifier = require('node-notifier');
+const mysql = require('mysql');
+const app = express();
+
 const pool = mysql.createPool({
   // Your MySQL database connection details
   host: "localhost",
@@ -13,7 +14,7 @@ const pool = mysql.createPool({
   password: "",
   database: "todo",
 });
-const app = express();
+
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -25,21 +26,22 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
 }));
+
+app.use(['/', '/login','/register','/check'],User.CheckSql)
 const staticPath = path.join(__dirname, 'public');
 app.set('views', path.join(__dirname, 'views'));
 
-// Use the express.static middleware to serve static files
+
 app.use(express.static(staticPath));
 // Login route
-app.get('/login', async (req, res) => {
 
+app.get('/login', async (req, res) => {
   res.render('login');
 });
 
 app.get('/register', async (req, res) => {
-
   res.render('register');
-});
+});``
 
 app.post('/login', async (req, res) => {
 
@@ -74,8 +76,13 @@ app.post('/register', async (req, res) => {
     }
 });
 
+app.get('/cal',async(req,res)=>{
+  res.render('calender');
+});
+
+
 app.get('/', (req, res) => {
-  User.CheckSql();
+  
   if (!req.session.user) {
     res.render('login');
     return;
@@ -85,27 +92,17 @@ app.get('/', (req, res) => {
 });
 
 app.get('/check', (req, res) => {
- User.CheckSql();
-// pool.getConnection((err, connection) => {
-//   if (err) {
-//     //res.status(500).send('Error connecting to MySQL server');
-//     console.error(err);
-//     notifier.notify({
-//       title: 'Salutations!',
-//       message: 'Hey there!',
-//      // icon: path.join(__dirname, 'icon.jpg'),
-//       sound: true,
-//       wait: true
-//     })
-//   } else {
-//    // res.send('MySQL connection is healthy!');
-//     connection.release();
-//   }
-// });
+  pool.getConnection((err, connection) => {
+    if (err) {
+      res.status(500).send('Error connecting to MySQL server');
+      console.error(err);
+    } else {
+      res.send('MySQL connection is healthy!');
+      connection.release();
+    }
+  });
 })
 
-// Additional routes for to-do app functionalities
-
-app.listen(3000, () => {
-  console.log('Server is listening on port 3000');
+app.listen(3001, () => {
+  console.log('Server is listening on port 3001');
 });

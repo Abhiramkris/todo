@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yearly Calendar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Yearly Calendar</h1>
+
+<button onclick="prevYear()">Previous Year</button>
+<button onclick="nextYear()">Next Year</button>
+
+<div id="calendar-container"></div>
+
+<script>
+  const calendarContainer = document.getElementById('calendar-container');
+  let currentYear = new Date().getFullYear();
+
+  function generateCalendar(year) {
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    let html = `<h2>${year}</h2>`;
+
+    for (let month = 0; month < 12; month++) {
+      html += `<h3>${months[month]}</h3>`;
+      html += '<table>';
+      html += '<tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>';
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      let dayCounter = 1;
+
+      for (let i = 0; i < 6; i++) {
+        html += '<tr>';
+        for (let j = 0; j < 7; j++) {
+          if ((i === 0 && j < firstDay) || dayCounter > daysInMonth) {
+            html += '<td></td>';
+          } else {
+            html += `<td>${dayCounter}</td>`;
+            dayCounter++;
+          }
+        }
+        html += '</tr>';
+      }
+
+      html += '</table>';
+    }
+
+    calendarContainer.innerHTML = html;
+  }
+
+  function prevYear() {
+    currentYear--;
+    generateCalendar(currentYear);
+  }
+
+  function nextYear() {
+    currentYear++;
+    generateCalendar(currentYear);
+  }
+
+  generateCalendar(currentYear);
+</script>
+
+</body>
+</html>
